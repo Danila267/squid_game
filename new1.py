@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import sys
 
 # Initialize pygame
 pygame.init()
@@ -41,6 +42,10 @@ green_light = True
 last_switch_time = time.time()
 killing_enabled = False  # Prevents instant death after switching
 
+font = pygame.font.Font(None, 50)
+small_font = pygame.font.Font(None, 30)
+clock = pygame.time.Clock()
+
 # Screen Setup
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Squid Game - Red Light Green Light")
@@ -48,20 +53,43 @@ pygame.display.set_caption("Squid Game - Red Light Green Light")
 def clamp_speed(speed):
     return max(MIN_BOT_SPEED, min(MAX_BOT_SPEED, speed))
 
+def draw_text(text, font, color, x, y):
+    text_surface = font.render(text, True, color)
+    screen.blit(text_surface, (x, y))
+
+def main_menu():
+    while True:
+        screen.fill(BLACK)
+        draw_text ("Space Invaders", font, WHITE, WIDTH // 3, HEIGHT // 6)
+        draw_text ("1. начать игру ", small_font, WHITE, WIDTH // 3, HEIGHT // 3)
+        draw_text ("2. правила", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 50)
+        draw_text ("3. выход", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 100)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame. QUIT:
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    game_loop()
+                elif event.key == pygame.K_2:
+                    show_rules()
+                elif event.key == pygame.K_3:
+                    sys.exit()
+
 
 def switch_light():
-    global green_light, last_switch_time, killing_enabled, bot_speeds, bot_states
+    global green_light, last_switch_time, killing_enabled, bot_states, bot_speeds
     green_light = not green_light
     last_switch_time = time.time()
     killing_enabled = False  # Reset reaction timer
+    
     if green_light:
-        bot_speeds = [clamp_speed(random.uniform(MIN_BOT_SPEED, MAX_BOT_SPEED)) for _ in range(BOT_COUNT)]  # Change bot speeds each round
+        bot_speeds = [clamp_speed(random.uniform(MIN_BOT_SPEED, MAX_BOT_SPEED)) for _ in range(BOT_COUNT)]
     else:
         bot_states = [random.random() > 0.5 for _ in range(BOT_COUNT)]  # 50% chance for each bot to stop
 
-# Game Loop
 def game_loop():
-    global green_light, killing_enabled, last_switch_time  # Use global variables
+    global green_light, killing_enabled, last_switch_time, bot_states  # Ensure bot_states is global
 
     # Player Setup
     player_size = 50
@@ -69,22 +97,20 @@ def game_loop():
     player = pygame.Rect(player_x, player_y, player_size, player_size)
     finish_line = WIDTH - 100
 
-    # Bot Setup (Evenly spread along the starting line with slight variation)
+    # Bot Setup
     bots = []
-    bot_states = []
-    bot_speeds = []
-    dead_bots = {}
-    bot_start_x = 120  
+    dead_bots = {}  # Store eliminated bot positions
+    bot_states = []  # Track bot movement status (linked to switch_light)
+    bot_speeds = []  
 
     for i in range(BOT_COUNT):
         bot_y = (i + 1) * BOT_SPACING + random.randint(-20, 20)
-        bots.append(pygame.Rect(bot_start_x, bot_y, player_size, player_size))
-        bot_states.append(True)
+        bots.append(pygame.Rect(120, bot_y, player_size, player_size))
+        bot_states.append(True)  # Bots start moving
         bot_speeds.append(random.uniform(MIN_BOT_SPEED, MAX_BOT_SPEED))
 
     bot_speeds = [clamp_speed(speed) for speed in bot_speeds]
 
-    # Game Variables
     running = True
 
     while running:
@@ -100,7 +126,7 @@ def game_loop():
             switch_light()
         
         if not green_light and time.time() - last_switch_time > REACTION_DELAY:
-            killing_enabled = True  # Enable killing only after reaction delay
+            killing_enabled = True  # Enable elimination after reaction delay
         
         # Player Movement
         keys = pygame.key.get_pressed()
@@ -118,7 +144,7 @@ def game_loop():
         for i, bot in enumerate(bots):
             if green_light or (not killing_enabled and bot_states[i]):  
                 bot.x += bot_speeds[i]
-            if not green_light and killing_enabled and not bot_states[i]:
+            if not green_light and killing_enabled and not bot_states[i]:  # Bot moved when it should have stopped
                 if random.random() < BOT_DEATH_CHANCE:
                     print(f"Bot {i} moved on RED! Eliminated!")
                     dead_bots[(bot.x, bot.y)] = bot_dead_img  
@@ -157,4 +183,5 @@ def game_loop():
     pygame.quit()
 
 
-game_loop()
+
+main_menu()
