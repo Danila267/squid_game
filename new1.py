@@ -77,6 +77,7 @@ def load_image(path, size=None):
 
 bg_menu = load_image("menu_bg.png", (WIDTH, HEIGHT))
 bg_finished = load_image("bg_finish.png", (WIDTH, HEIGHT))
+bg_lose = load_image("bg_lost.png", (WIDTH, HEIGHT))
 
 # def finished():
 #     while True:
@@ -89,13 +90,17 @@ bg_finished = load_image("bg_finish.png", (WIDTH, HEIGHT))
 #             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
 #                 game_loop()
 
-def finished():
+def finished(win):
     start_time = time.time()
     while True:
-        screen.blit(bg_finished, (0, 0))
         elapsed_time = time.time() - start_time
         text_y_offset = int(math.sin(elapsed_time * 2) * 10)  # Up-down animation
-        draw_text("Press ENTER to Play Again", small_font, BLACK, WIDTH // 2.75, (HEIGHT // 1.17) + text_y_offset)
+        if win:
+            screen.blit(bg_finished, (0, 0))
+            draw_text("Press ENTER to Play Again", small_font, BLACK, WIDTH // 2.75, (HEIGHT // 1.17) + text_y_offset)
+        else:
+            screen.blit(bg_lose, (0, 0))
+            draw_text("Press ENTER to Play Again", small_font, BLACK, WIDTH // 2.75, (HEIGHT // 1.17) + text_y_offset)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -201,6 +206,7 @@ def game_loop():
         if not green_light and killing_enabled and keys[pygame.K_RIGHT]:
             print("You moved on RED! Game Over!")
             running = False
+            finished(False)
         
         # Bot Movement and Red Light Check
         surviving_bots = []
@@ -231,7 +237,7 @@ def game_loop():
         if player.x >= finish_line:
             print("You won!")
             running = False
-            finished()
+            finished(True)
         
         # Draw Elements
         screen.blit(player_img, (player.x, player.y))
