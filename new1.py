@@ -46,6 +46,7 @@ font = pygame.font.Font(None, 50)
 small_font = pygame.font.Font(None, 30)
 clock = pygame.time.Clock()
 
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 PINK = (255, 182, 193)
@@ -72,6 +73,9 @@ def load_image(path, size=None):
         print(f"Ошибка загрузки {path}: {e}")
         sys.exit()
 
+
+bg_menu = load_image("menu_bg.png", (WIDTH, HEIGHT))
+
 def show_rules () :
     while True:
         screen.fill (BLACK)
@@ -90,7 +94,7 @@ def show_rules () :
 
 def main_menu():
     while True:
-        screen.fill(BLACK)
+        screen.blit(bg_menu, (0, 0))
         draw_text ("Squid game", font, WHITE, WIDTH // 3, HEIGHT // 6)
         draw_text ("1. Start the game ", small_font, WHITE, WIDTH // 3, HEIGHT // 3)
         draw_text ("2. Rules", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 50)
@@ -133,6 +137,10 @@ def game_loop():
     dead_bots = {}  # Store eliminated bot positions
     bot_states = []  # Track bot movement status (linked to switch_light)
     bot_speeds = []  
+
+    last_switch_time = time.time()  # Reset timer when game starts
+    killing_enabled = False  # Ensure no instant bot eliminations
+
 
     for i in range(BOT_COUNT):
         bot_y = (i + 1) * BOT_SPACING + random.randint(-20, 20)
