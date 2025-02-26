@@ -76,7 +76,7 @@ def load_image(path, size=None):
 
 
 bg_menu = load_image("menu_bg.png", (WIDTH, HEIGHT))
-bg_finished = load_image("bg_finish.png", (WIDTH, HEIGHT))
+bg_finished = load_image("bg_finished.png", (WIDTH, HEIGHT))
 bg_lose = load_image("bg_lost.png", (WIDTH, HEIGHT))
 
 # def finished():
@@ -100,7 +100,7 @@ def finished(win):
             draw_text("Press ENTER to Play Again", small_font, BLACK, WIDTH // 2.75, (HEIGHT // 1.17) + text_y_offset)
         else:
             screen.blit(bg_lose, (0, 0))
-            draw_text("Press ENTER to Play Again", small_font, BLACK, WIDTH // 2.75, (HEIGHT // 1.17) + text_y_offset)
+            draw_text("Press ENTER to Play Again", small_font, WHITE, WIDTH // 2.65, (HEIGHT // 1.15) + text_y_offset)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -157,6 +157,12 @@ def switch_light():
 
 def game_loop():
     global green_light, killing_enabled, last_switch_time, bot_states  # Ensure bot_states is global
+
+    green_light = True
+    killing_enabled = False
+    last_switch_time = time.time()
+    bot_states = []
+    dead_bots = {}
 
     # Player Setup
     player_size = 50
