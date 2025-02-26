@@ -75,6 +75,18 @@ def load_image(path, size=None):
 
 
 bg_menu = load_image("menu_bg.png", (WIDTH, HEIGHT))
+bg_finished = load_image("bg_finish.png", (WIDTH, HEIGHT))
+
+def finished():
+    while True:
+        screen.blit(bg_finished, (0, 0))
+        draw_text("Press ENTER to Play Again", small_font, BLACK, WIDTH // 2.75, HEIGHT // 1.17)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                game_loop()
 
 def show_rules () :
     while True:
@@ -204,6 +216,7 @@ def game_loop():
         if player.x >= finish_line:
             print("You won!")
             running = False
+            finished()
         
         # Draw Elements
         screen.blit(player_img, (player.x, player.y))
