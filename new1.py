@@ -62,13 +62,24 @@ def draw_text(text, font, color, x, y):
     text_surface = font.render(text, True, color)
     screen.blit(text_surface, (x, y))
 
+def load_image(path, size=None):
+    try:
+        image = pygame.image.load(path)
+        if size:
+            image = pygame.transform.scale(image, size)
+        return image
+    except pygame.error as e:
+        print(f"Ошибка загрузки {path}: {e}")
+        sys.exit()
+
 def show_rules () :
     while True:
         screen.fill (BLACK)
-        draw_text ("правила игры", font, WHITE, WIDTH // 3, HEIGHT // 6)
-        draw_text ("Стрелки для движения", small_font, WHITE, WIDTH // 6, HEIGHT //3)
-        draw_text ("SPACE для выстрела", small_font, WHITE, WIDTH // 6, HEIGHT // 3 + 40)
-        draw_text ("ESC для выхода в меню", small_font, WHITE, WIDTH // 3, HEIGHT // +150)
+        draw_text ("Game rules", font, WHITE, WIDTH // 3, HEIGHT // 6)
+        draw_text ("Use arrows to run", small_font, WHITE, WIDTH // 6, HEIGHT //3)
+        draw_text ("Get to the finish", small_font, WHITE, WIDTH // 6, HEIGHT // 3 + 40)
+        draw_text ("Don't run on the red light, or when the music stops", small_font, WHITE, WIDTH // 6, HEIGHT // 3 + 80)
+        draw_text ("ESC to go back to menu", small_font, WHITE, WIDTH // 3, HEIGHT // +150)
         pygame.display.update ()
         for event in pygame.event.get ():
             if event.type == pygame.QUIT:
