@@ -15,7 +15,7 @@ BOT_COUNT = 5
 BOT_SPACING = HEIGHT // (BOT_COUNT + 1)  # Distribute bots evenly across the height
 BOT_DEATH_CHANCE = 0.5  # Adjusted for more random deaths
 MIN_BOT_SPEED = PLAYER_SPEED * 0.4  # Bot speed varies from 0.4x to 1.0x of player speed
-MAX_BOT_SPEED = PLAYER_SPEED * 1.0  # Ensuring bots do not exceed player speed
+MAX_BOT_SPEED = PLAYER_SPEED * 0.9  # Ensuring bots do not exceed player speed
 REACTION_DELAY = 0.07  # Delay before bots or player are eliminated
 
 # Colors
@@ -46,6 +46,11 @@ font = pygame.font.Font(None, 50)
 small_font = pygame.font.Font(None, 30)
 clock = pygame.time.Clock()
 
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+PINK = (255, 182, 193)
+YELLOW = (255, 255, 0)
+
 # Screen Setup
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Squid Game - Red Light Green Light")
@@ -57,13 +62,28 @@ def draw_text(text, font, color, x, y):
     text_surface = font.render(text, True, color)
     screen.blit(text_surface, (x, y))
 
+def show_rules () :
+    while True:
+        screen.fill (BLACK)
+        draw_text ("правила игры", font, WHITE, WIDTH // 3, HEIGHT // 6)
+        draw_text ("Стрелки для движения", small_font, WHITE, WIDTH // 6, HEIGHT //3)
+        draw_text ("SPACE для выстрела", small_font, WHITE, WIDTH // 6, HEIGHT // 3 + 40)
+        draw_text ("ESC для выхода в меню", small_font, WHITE, WIDTH // 3, HEIGHT // +150)
+        pygame.display.update ()
+        for event in pygame.event.get ():
+            if event.type == pygame.QUIT:
+                sys.exit ()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    main_menu ()
+
 def main_menu():
     while True:
         screen.fill(BLACK)
-        draw_text ("Space Invaders", font, WHITE, WIDTH // 3, HEIGHT // 6)
-        draw_text ("1. начать игру ", small_font, WHITE, WIDTH // 3, HEIGHT // 3)
-        draw_text ("2. правила", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 50)
-        draw_text ("3. выход", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 100)
+        draw_text ("Squid game", font, WHITE, WIDTH // 3, HEIGHT // 6)
+        draw_text ("1. Start the game ", small_font, WHITE, WIDTH // 3, HEIGHT // 3)
+        draw_text ("2. Rules", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 50)
+        draw_text ("3. Quit", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 100)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame. QUIT:
