@@ -24,11 +24,12 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
+TRANSPARENT_BLACK = (0, 0, 0, 150)
 
 # Load Images
 player_img = pygame.image.load("player.png")
 bot_img = pygame.image.load("bot.png")
-bot_dead_img = pygame.image.load("bot_dead.png")  # Image for dead bots
+bot_dead_img = pygame.image.load("bot_dead.png")
 light_green_img = pygame.image.load("light_green.png")
 light_red_img = pygame.image.load("light_red.png")
 
@@ -124,24 +125,44 @@ def show_rules () :
                 if event.key == pygame.K_ESCAPE:
                     main_menu ()
 
+def draw_rounded_rect(surface, color, rect, radius, border_width=0):
+    temp_surface = pygame.Surface((rect[2], rect[3]), pygame.SRCALPHA)
+    pygame.draw.rect(temp_surface, color, (0, 0, rect[2], rect[3]), border_radius=radius)
+    if border_width > 0:
+        pygame.draw.rect(temp_surface, BLACK, (0, 0, rect[2], rect[3]), border_radius=radius, width=border_width)
+    surface.blit(temp_surface, (rect[0], rect[1]))
+
 def main_menu():
     while True:
         screen.blit(bg_menu, (0, 0))
-        draw_text ("Squid game", font, WHITE, WIDTH // 3, HEIGHT // 6)
-        draw_text ("1. Start the game ", small_font, WHITE, WIDTH // 3, HEIGHT // 3)
-        draw_text ("2. Rules", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 50)
-        draw_text ("3. Quit", small_font, WHITE, WIDTH // 3, HEIGHT // 3 + 100)
+        button_rects = [
+            pygame.Rect(WIDTH // 2.7, HEIGHT // 2.3, 250, 50),
+            pygame.Rect(WIDTH // 2.7, HEIGHT // 2.3 + 60, 250, 50),
+            pygame.Rect(WIDTH // 2.7, HEIGHT // 2.3 + 120, 250, 50)
+        ]
+        
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_click = pygame.mouse.get_pressed()[0]
+        
+        for i, rect in enumerate(button_rects):
+            draw_rounded_rect(screen, (0, 0, 0, 180) if rect.collidepoint(mouse_pos) else (0, 0, 0, 120), rect, 15, border_width=3)
+            if rect.collidepoint(mouse_pos) and mouse_click:
+                if i == 0:
+                    game_loop()
+                elif i == 1:
+                    show_rules()
+                elif i == 2:
+                    sys.exit()
+        
+        draw_text("Squid Game", font, WHITE, WIDTH // 2.5, HEIGHT // 10)
+        draw_text("Start the game", small_font, WHITE, WIDTH // 2.7 + 20, HEIGHT // 2.3 + 10)
+        draw_text("Rules", small_font, WHITE, WIDTH // 2.7 + 20, HEIGHT // 2.3 + 70)
+        draw_text("Quit", small_font, WHITE, WIDTH // 2.7 + 20, HEIGHT // 2.3 + 130)
+        
         pygame.display.update()
         for event in pygame.event.get():
-            if event.type == pygame. QUIT:
+            if event.type == pygame.QUIT:
                 sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    game_loop()
-                elif event.key == pygame.K_2:
-                    show_rules()
-                elif event.key == pygame.K_3:
-                    sys.exit()
 
 
 def switch_light():
