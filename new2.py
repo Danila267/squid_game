@@ -293,6 +293,21 @@ def game_loop():
         pygame.draw.line(screen, BLACK, (finish_line, 0), (finish_line, HEIGHT), 5)
         screen.blit(light_green_img if green_light else light_red_img, (WIDTH // 2 - 30, 20))
 
+        # Check for exit button click
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_click = pygame.mouse.get_pressed()[0]
+
+        # Draw Exit Button
+        exit_button = pygame.Rect(WIDTH * 0.02, 100, 80, 40)
+        pygame.draw.rect(screen, ((150, 150, 150) if exit_button.collidepoint(mouse_pos) else (100, 100, 100)), exit_button, border_radius=10)
+        draw_text("Exit", small_font, WHITE, WIDTH * 0.04, 110)
+        
+
+        if exit_button.collidepoint(mouse_pos) and mouse_click:
+            main_menu()
+
+
+
         # Draw Timer in Top Left Corner
         pygame.draw.rect(screen, WHITE, (10, 10, 120, 50))  # Background to clear previous timer
         draw_text(timer_text, font, BLACK, 20, 20)
