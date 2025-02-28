@@ -54,6 +54,8 @@ WHITE = (255, 255, 255)
 PINK = (255, 182, 193)
 YELLOW = (255, 255, 0)
 
+score = 0
+
 pygame.mixer.init()
 pygame.mixer.music.load("background.mp3")
 pygame.mixer.music.set_volume(0.3)  # Load background music
@@ -182,7 +184,7 @@ def switch_light():
         bot_states = [random.random() > 0.5 for _ in range(BOT_COUNT)]  # 50% chance for each bot to stop
 
 def game_loop():
-    global green_light, killing_enabled, last_switch_time, bot_states  # Ensure bot_states is global
+    global green_light, killing_enabled, last_switch_time, bot_states, score  # Ensure bot_states is global
 
     green_light = True
     killing_enabled = False
@@ -196,6 +198,8 @@ def game_loop():
     player_x, player_y = 100, HEIGHT // 2
     player = pygame.Rect(player_x, player_y, player_size, player_size)
     finish_line = WIDTH - 100
+
+    score = 0
 
     # Bot Setup
     bots = []
@@ -258,6 +262,7 @@ def game_loop():
             if not green_light and killing_enabled and not bot_states[i]:  # Bot moved when it should have stopped
                 if random.random() < BOT_DEATH_CHANCE:
                     print(f"Bot {i} moved on RED! Eliminated!")
+                    score += random.randint(5, 30)
                     dead_bots[(bot.x, bot.y)] = bot_dead_img  
                 else:
                     surviving_bots.append(bot)
@@ -291,7 +296,7 @@ def game_loop():
         # Draw Timer in Top Left Corner
         pygame.draw.rect(screen, WHITE, (10, 10, 120, 50))  # Background to clear previous timer
         draw_text(timer_text, font, BLACK, 20, 20)
-        draw_text(f"Score: 0", font, BLACK, 20, 40)
+        draw_text(f"Score: {score}", small_font, BLACK, 20, 65)
         
         # Update Screen
         pygame.display.flip()
