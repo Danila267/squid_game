@@ -14,7 +14,7 @@ GREEN_LIGHT_TIME = 2
 RED_LIGHT_TIME = 2
 BOT_COUNT = 5
 BOT_SPACING = HEIGHT // (BOT_COUNT + 1)  # Distribute bots evenly across the height
-BOT_DEATH_CHANCE = 0.5  # Adjusted for more random deaths
+BOT_DEATH_CHANCE = 0.3  # Adjusted for more random deaths
 MIN_BOT_SPEED = PLAYER_SPEED * 0.4  # Bot speed varies from 0.4x to 1.0x of player speed
 MAX_BOT_SPEED = PLAYER_SPEED * 0.9  # Ensuring bots do not exceed player speed
 REACTION_DELAY = 0.07  # Delay before bots or player are eliminated
@@ -90,6 +90,8 @@ bg_menu = load_image("menu_bg.png", (WIDTH, HEIGHT))
 bg_finished = load_image("bg_finished.png", (WIDTH, HEIGHT))
 bg_lose = load_image("bg_lost.png", (WIDTH, HEIGHT))
 
+round = 1
+
 # def finished():
 #     while True:
 #         screen.blit(bg_finished, (0, 0))
@@ -118,6 +120,8 @@ def finished(win):
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 game_loop()
+                win_sound.stop()
+                lose_sound.stop()
 
 def show_rules () :
     while True:
@@ -187,7 +191,7 @@ def switch_light():
         bot_states = [random.random() > 0.5 for _ in range(BOT_COUNT)]  # 50% chance for each bot to stop
 
 def game_loop():
-    global green_light, killing_enabled, last_switch_time, bot_states, score  # Ensure bot_states is global
+    global green_light, killing_enabled, last_switch_time, bot_states, score, round, BOT_DEATH_CHANCE  # Ensure bot_states is global
 
     green_light = True
     killing_enabled = False
@@ -201,8 +205,6 @@ def game_loop():
     player_x, player_y = 100, HEIGHT // 2
     player = pygame.Rect(player_x, player_y, player_size, player_size)
     finish_line = WIDTH - 100
-
-    score = 0
 
     # Bot Setup
     bots = []
@@ -252,7 +254,10 @@ def game_loop():
         if not green_light and killing_enabled and keys[pygame.K_RIGHT]:
             print("You moved on RED! Game Over!")
             lose_sound.play()
-            
+            score = 0
+            round = 1
+            BOT_DEATH_CHANCE = 0.3
+
             running = False
             finished(False)
         
@@ -267,7 +272,7 @@ def game_loop():
             if not green_light and killing_enabled and not bot_states[i]:  # Bot moved when it should have stopped
                 if random.random() < BOT_DEATH_CHANCE:
                     print(f"Bot {i} moved on RED! Eliminated!")
-                    score += random.randint(5, 30)
+                    score += random.randint(30, 90)
                     dead_sound.play()
                     dead_bots[(bot.x, bot.y)] = bot_dead_img  
                 else:
@@ -287,6 +292,9 @@ def game_loop():
         if player.x >= finish_line:
             print("You won!")
             win_sound.play()
+            round += 1
+            BOT_DEATH_CHANCE *= 1.1
+            score += random.randint(60, 200)
             running = False
             finished(True)
         
@@ -318,7 +326,8 @@ def game_loop():
         # Draw Timer in Top Left Corner
         pygame.draw.rect(screen, WHITE, (10, 10, 120, 50))  # Background to clear previous timer
         draw_text(timer_text, font, BLACK, 20, 20)
-        draw_text(f"Score: {score}", small_font, BLACK, 20, 65)
+        draw_text(f"Dollars: ${score}", small_font, BLACK, 20, 65)
+        draw_text(f"Round: {round}", small_font, BLACK, 20, HEIGHT * 0.95)
         
         # Update Screen
         pygame.display.flip()
