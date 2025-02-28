@@ -57,6 +57,9 @@ YELLOW = (255, 255, 0)
 score = 0
 
 pygame.mixer.init()
+dead_sound = pygame.mixer.Sound("dead.mp3")
+win_sound = pygame.mixer.Sound("win.mp3")
+lose_sound = pygame.mixer.Sound("lose.mp3")
 pygame.mixer.music.load("background.mp3")
 pygame.mixer.music.set_volume(0.3)  # Load background music
 pygame.mixer.music.play(-1)  # Play music in a loop
@@ -248,6 +251,8 @@ def game_loop():
             player.x += PLAYER_SPEED
         if not green_light and killing_enabled and keys[pygame.K_RIGHT]:
             print("You moved on RED! Game Over!")
+            lose_sound.play()
+            
             running = False
             finished(False)
         
@@ -263,6 +268,7 @@ def game_loop():
                 if random.random() < BOT_DEATH_CHANCE:
                     print(f"Bot {i} moved on RED! Eliminated!")
                     score += random.randint(5, 30)
+                    dead_sound.play()
                     dead_bots[(bot.x, bot.y)] = bot_dead_img  
                 else:
                     surviving_bots.append(bot)
@@ -280,6 +286,7 @@ def game_loop():
         # Check Win Condition
         if player.x >= finish_line:
             print("You won!")
+            win_sound.play()
             running = False
             finished(True)
         
