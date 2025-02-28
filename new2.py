@@ -187,6 +187,7 @@ def game_loop():
     green_light = True
     killing_enabled = False
     last_switch_time = time.time()
+    start_time = time.time()
     bot_states = []
     dead_bots = {}
 
@@ -218,6 +219,12 @@ def game_loop():
 
     while running:
         screen.fill(WHITE)
+
+        # Calculate elapsed time
+        elapsed_time = int(time.time() - start_time)
+        minutes = elapsed_time // 60
+        seconds = elapsed_time % 60
+        timer_text = f"{minutes:02}:{seconds:02}"
         
         # Check for events
         for event in pygame.event.get():
@@ -280,6 +287,11 @@ def game_loop():
             screen.blit(dead_img, (dead_x, dead_y))  
         pygame.draw.line(screen, BLACK, (finish_line, 0), (finish_line, HEIGHT), 5)
         screen.blit(light_green_img if green_light else light_red_img, (WIDTH // 2 - 30, 20))
+
+        # Draw Timer in Top Left Corner
+        pygame.draw.rect(screen, WHITE, (10, 10, 120, 50))  # Background to clear previous timer
+        draw_text(timer_text, font, BLACK, 20, 20)
+        draw_text(f"Score: 0", font, BLACK, 20, 40)
         
         # Update Screen
         pygame.display.flip()
