@@ -54,6 +54,11 @@ WHITE = (255, 255, 255)
 PINK = (255, 182, 193)
 YELLOW = (255, 255, 0)
 
+pygame.mixer.init()
+pygame.mixer.music.load("background.mp3")
+pygame.mixer.music.set_volume(0.3)  # Load background music
+pygame.mixer.music.play(-1)  # Play music in a loop
+
 # Screen Setup
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Squid Game - Red Light Green Light")
