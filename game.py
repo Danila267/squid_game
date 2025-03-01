@@ -10,7 +10,7 @@ pygame.init()
 # Game Constants
 WIDTH, HEIGHT = 1000, 600  # Increased width for longer gameplay
 PLAYER_SPEED = 5
-GREEN_LIGHT_TIME = 2
+GREEN_LIGHT_TIME = 4
 RED_LIGHT_TIME = 2
 BOT_COUNT = 5
 BOT_SPACING = HEIGHT // (BOT_COUNT + 1)  # Distribute bots evenly across the height
@@ -191,7 +191,7 @@ def switch_light():
         bot_states = [random.random() > 0.5 for _ in range(BOT_COUNT)]  # 50% chance for each bot to stop
 
 def game_loop():
-    global green_light, killing_enabled, last_switch_time, bot_states, score, round, BOT_DEATH_CHANCE  # Ensure bot_states is global
+    global green_light, killing_enabled, last_switch_time, bot_states, score, round, BOT_DEATH_CHANCE, GREEN_LIGHT_TIME  # Ensure bot_states is global
 
     green_light = True
     killing_enabled = False
@@ -256,6 +256,7 @@ def game_loop():
             lose_sound.play()
             score = 0
             round = 1
+            GREEN_LIGHT_TIME = 5
             BOT_DEATH_CHANCE = 0.3
 
             running = False
@@ -293,6 +294,7 @@ def game_loop():
             print("You won!")
             win_sound.play()
             round += 1
+            GREEN_LIGHT_TIME *= 0.8
             BOT_DEATH_CHANCE *= 1.1
             score += random.randint(60, 200)
             running = False
