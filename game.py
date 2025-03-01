@@ -256,7 +256,7 @@ def game_loop():
             lose_sound.play()
             score = 0
             round = 1
-            GREEN_LIGHT_TIME = 5
+            GREEN_LIGHT_TIME = 4
             BOT_DEATH_CHANCE = 0.3
 
             running = False
